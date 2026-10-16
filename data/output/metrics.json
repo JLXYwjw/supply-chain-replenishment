@@ -1,0 +1,37 @@
+{
+ "rows": 91250,
+ "skus": 50,
+ "whs": 5,
+ "coverage_median": 1.53,
+ "coverage_le12_pct": 22.12,
+ "coverage_ge20_pct": 18.16,
+ "coverage_lt1_pct": 5.25,
+ "demand_mean": 20.05,
+ "lead_time_mean": 7.98,
+ "lead_time_max": 14,
+ "promo_on_mean": 24.91,
+ "promo_off_mean": 19.5,
+ "promo_lift_pct": 27.7,
+ "region_dist": [
+  {
+   "region": "East",
+   "rows": 63
+  },
+  {
+   "region": "North",
+   "rows": 62
+  },
+  {
+   "region": "South",
+   "rows": 63
+  },
+  {
+   "region": "West",
+   "rows": 62
+  }
+ ],
+ "cv_median": 0.452,
+ "cv_high_pct": 100.0,
+ "sku_wh_le12": 0,
+ "sku_wh_ge20": 0
+}

@@ -1,0 +1,155 @@
+{
+ "n_sku_wh": 250,
+ "features": [
+  "demand_mean_log",
+  "demand_cv",
+  "lead_time_days",
+  "coverage"
+ ],
+ "clusters": [
+  {
+   "cluster": 0,
+   "n": 67,
+   "demand_mean": 19.886771621345325,
+   "cv": 0.46046797119083377,
+   "lead_time": 4.164179104477612,
+   "coverage": 1.554776119402985
+  },
+  {
+   "cluster": 1,
+   "n": 86,
+   "demand_mean": 20.214558776680473,
+   "cv": 0.441287297573654,
+   "lead_time": 6.709302325581396,
+   "coverage": 1.6577906976744186
+  },
+  {
+   "cluster": 2,
+   "n": 97,
+   "demand_mean": 20.028611777997458,
+   "cv": 0.4568602335660832,
+   "lead_time": 11.75257731958763,
+   "coverage": 1.5630927835051547
+  }
+ ],
+ "ss_median": 41.75,
+ "rop_median": 202.1,
+ "below_rop_pct": 0.0,
+ "high_cv_share": 100.0,
+ "priority_table": [
+  {
+   "priority": "P1",
+   "n": 63,
+   "mean_gap": 139.79999999999998,
+   "mean_cv": 0.45434277006718443
+  },
+  {
+   "priority": "P2",
+   "n": 62,
+   "mean_gap": 233.07419354838711,
+   "mean_cv": 0.45271070835775146
+  },
+  {
+   "priority": "P3",
+   "n": 62,
+   "mean_gap": 304.333870967742,
+   "mean_cv": 0.4502703357507275
+  },
+  {
+   "priority": "P4",
+   "n": 63,
+   "mean_gap": 404.94761904761907,
+   "mean_cv": 0.4525251598106645
+  }
+ ],
+ "top_needed": [
+  {
+   "sku": "SKU_50",
+   "wh": "WH_4",
+   "region": "South",
+   "demand_mean": 19.994520547945207,
+   "lead_time_days": 14,
+   "inv_mean": 375.2301369863014,
+   "rop": 333.9,
+   "gap_to_rop": 41.3,
+   "demand_cv": 0.4370639669989493
+  },
+  {
+   "sku": "SKU_6",
+   "wh": "WH_2",
+   "region": "North",
+   "demand_mean": 19.942465753424656,
+   "lead_time_days": 14,
+   "inv_mean": 387.2,
+   "rop": 332.5,
+   "gap_to_rop": 54.7,
+   "demand_cv": 0.4331134676026149
+  },
+  {
+   "sku": "SKU_26",
+   "wh": "WH_3",
+   "region": "West",
+   "demand_mean": 19.786301369863015,
+   "lead_time_days": 14,
+   "inv_mean": 399.7287671232877,
+   "rop": 335.4,
+   "gap_to_rop": 64.3,
+   "demand_cv": 0.4778324663932112
+  },
+  {
+   "sku": "SKU_3",
+   "wh": "WH_1",
+   "region": "South",
+   "demand_mean": 20.147945205479452,
+   "lead_time_days": 14,
+   "inv_mean": 403.58082191780824,
+   "rop": 339.1,
+   "gap_to_rop": 64.5,
+   "demand_cv": 0.4582721941803668
+  },
+  {
+   "sku": "SKU_43",
+   "wh": "WH_5",
+   "region": "South",
+   "demand_mean": 20.194520547945206,
+   "lead_time_days": 14,
+   "inv_mean": 415.6931506849315,
+   "rop": 340.5,
+   "gap_to_rop": 75.2,
+   "demand_cv": 0.46322524635329343
+  },
+  {
+   "sku": "SKU_44",
+   "wh": "WH_3",
+   "region": "East",
+   "demand_mean": 19.723287671232878,
+   "lead_time_days": 13,
+   "inv_mean": 386.5561643835616,
+   "rop": 310.9,
+   "gap_to_rop": 75.7,
+   "demand_cv": 0.4645731962444128
+  },
+  {
+   "sku": "SKU_23",
+   "wh": "WH_4",
+   "region": "West",
+   "demand_mean": 19.797260273972604,
+   "lead_time_days": 14,
+   "inv_mean": 409.91506849315067,
+   "rop": 333.5,
+   "gap_to_rop": 76.4,
+   "demand_cv": 0.4606204681950936
+  },
+  {
+   "sku": "SKU_14",
+   "wh": "WH_2",
+   "region": "East",
+   "demand_mean": 20.30958904109589,
+   "lead_time_days": 14,
+   "inv_mean": 419.36986301369865,
+   "rop": 342.3,
+   "gap_to_rop": 77.1,
+   "demand_cv": 0.46252589473877354
+  }
+ ]
+}

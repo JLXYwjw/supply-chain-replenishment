@@ -1,0 +1,28 @@
+{
+ "rows_in": 91250,
+ "missing": {
+  "Date": 0,
+  "SKU_ID": 0,
+  "Warehouse_ID": 0,
+  "Supplier_ID": 0,
+  "Region": 0,
+  "Units_Sold": 0,
+  "Inventory_Level": 0,
+  "Supplier_Lead_Time_Days": 0,
+  "Reorder_Point": 0,
+  "Order_Quantity": 0,
+  "Unit_Cost": 0,
+  "Unit_Price": 0,
+  "Promotion_Flag": 0,
+  "Stockout_Flag": 0,
+  "Demand_Forecast": 0
+ },
+ "date_min": "2024-01-01",
+ "date_max": "2024-12-30",
+ "skus": 50,
+ "warehouses": 5,
+ "stockout_positive": 0,
+ "stockout_rate": 0.0,
+ "rows_out": 91250,
+ "sku_wh_rows": 250
+}
