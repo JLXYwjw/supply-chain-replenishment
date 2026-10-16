@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Supply Chain Replenishment Optimization</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%234338ca'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%230ea5e9'/%3E%3C/svg%3E">
+<style>
+  :root{--ink:#191c33;--indigo:#4338ca;--vio:#6366f1;--soft:#818cf8;--sky:#0ea5e9;--bg:#f5f6ff;--line:#dfe2ff;--card:#fff;--muted:#5c607a}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px 80px}
+  header.hero{background:linear-gradient(135deg,#312e81,#4f46e5);color:#fff;padding:56px 24px 44px;margin-bottom:8px}
+  header.hero h1{margin:0 0 12px;font-size:30px;line-height:1.25}
+  header.hero .sub{opacity:.94;font-size:16px;max-width:900px}
+  header.hero .meta{margin-top:18px;font-size:13px;opacity:.85}
+  nav.tabs{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);z-index:5;padding:10px 24px}
+  nav.tabs .wrap{padding:0;display:flex;gap:6px;flex-wrap:wrap;max-width:1080px}
+  nav.tabs a{color:var(--indigo);text-decoration:none;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px}
+  nav.tabs a:hover{background:#e3e5ff}
+  section{padding:36px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:22px;margin:0 0 8px}
+  h2 .n{color:var(--indigo)}
+  .kicker{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--indigo);margin-bottom:4px}
+  h3{font-size:17px;margin:24px 0 8px}
+  p,li{font-size:14.5px}
+  .muted{color:var(--muted)}
+  .grid{display:grid;gap:16px}
+  .cards{grid-template-columns:repeat(3,1fr);margin:18px 0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(67,56,202,.08)}
+  .card .num{font-size:26px;font-weight:800;color:var(--indigo)}
+  .card .lbl{font-size:13px;color:var(--muted)}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:14px 0;background:#fff;table-layout:fixed}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top;overflow-wrap:break-word}
+  th{background:#eef0ff;font-weight:700;color:var(--indigo)}
+  .fig{margin:22px 0;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 16px;box-shadow:0 1px 3px rgba(67,56,202,.08)}
+  .fig h4{font-size:15px;margin:0 0 4px}
+  .fig .cap{font-size:12px;color:var(--muted);margin:0 0 12px}
+  .fig .why{display:flex;gap:12px;margin-top:14px;border-top:1px dashed var(--line);padding-top:12px}
+  .fig .why .tag{flex:0 0 60px;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+  .fig .why .tag.so{color:var(--indigo)}
+  .fig .why .tag.rec{color:var(--sky)}
+  .fig .why p{margin:0;font-size:13.5px}
+  .pill{display:inline-block;background:#e3e5ff;color:var(--indigo);border-radius:999px;padding:2px 10px;font-size:12px;font-weight:600;margin-right:6px}
+  .callout{background:#eef0ff;border:1px solid #c3c9ff;border-left:4px solid var(--indigo);padding:12px 16px;border-radius:8px;margin:14px 0;font-size:14px}
+  .two{grid-template-columns:1fr 1fr}
+  @media(max-width:720px){.two{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.bar{flex-wrap:wrap}.bar .bl{flex:0 0 100%;text-align:left;font-size:12px}.bar .bv{flex:0 0 96px;font-size:11px}.bar .track{min-width:40px}}
+  footer{padding:30px 24px 60px;font-size:12.5px;color:var(--muted)}
+  ul{margin:6px 0 14px;padding-left:20px}
+  .bar{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:13px}
+  .bar .bl{width:180px;flex:0 0 180px;text-align:right;color:var(--ink)}
+  .bar .track{flex:1;background:#e4e6fb;border-radius:6px;height:22px;position:relative;min-width:60px}
+  .bar .fill{height:100%;border-radius:6px}
+  .bar .bv{flex:0 0 120px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker" style="color:#c7d2fe">Data Analysis · Supply Chain Replenishment (Inventory Optimization)</div>
+    <h1>Supply Chain Replenishment Optimization</h1>
+    <p class="sub">Analysis of 91,250 real supply-chain inventory rows (full year 2024): identify inventory near/below the reorder point, high demand volatility and lead-time differences, and give safety-stock &amp; reorder optimization — avoiding lost orders from stockouts and freeing cash from overstock.</p>
+    <div class="meta">Data: supply-chain inventory dataset · 91,250 rows / 50 SKU / 5 warehouses / 4 regions · 2024-01-01 ~ 2024-12-30</div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="wrap">
+    <a href="#s1"><span class="n">1</span> · Objective</a>
+    <a href="#s2"><span class="n">2</span> · Data &amp; Cleaning</a>
+    <a href="#s3"><span class="n">3</span> · Metrics &amp; Charts</a>
+    <a href="#s4"><span class="n">4</span> · Replenishment Modeling</a>
+    <a href="#s5"><span class="n">5</span> · Recommendations</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<section id="s1">
+  <div class="kicker">Part 1 · Business Objective</div>
+  <h2><span class="n">1.</span> Why this analysis</h2>
+  <p>Retail/manufacturing supply chains balance <strong>lost orders from stockouts</strong> against <strong>cash tied up in overstock</strong>. Core questions:</p>
+  <ul>
+    <li><strong>Inventory health</strong>: which SKU/warehouse is <strong>near the reorder point</strong> (stockout risk) or <strong>far above demand</strong> (cash tied up)?</li>
+    <li><strong>Replenishment strategy</strong>: SKUs with volatile demand and long lead time need higher safety stock / reorder point.</li>
+  </ul>
+  <p><strong>One-line goal:</strong> use demand volatility + lead time + inventory coverage to identify the SKUs/warehouses to watch and give a replenishment direction.</p>
+  <p><strong>Honest boundary (stated up front).</strong> This data is a synthetic grid (50×5×365, no missing): ① <strong>the stockout label is all 0</strong>, no positives → stockout classification impossible; ② <strong>the demand-forecast column correlates with sales 0.949</strong> → demand is already "given the answer", retraining a predictor would be self-deceiving. So this project <strong>does not fake predictions</strong>; it provides <strong>decision support</strong> for inventory health &amp; replenishment strategy.</p>
+</section>
+
+<section id="s2">
+  <div class="kicker">Part 2 · Data &amp; Cleaning</div>
+  <h2><span class="n">2.</span> Data description &amp; preprocessing</h2>
+  <table>
+    <colgroup><col style="width:34%"><col style="width:66%"></colgroup>
+    <tr><th>Dimension</th><th>Note</th></tr>
+    <tr><td>Structure</td><td>50 SKU × 5 warehouses × 365 days = 91,250 rows; 4 regions; 10 suppliers</td></tr>
+    <tr><td>Missing</td><td>0 missing across all columns (synthetic grid, regular)</td></tr>
+    <tr><td>Stockout label</td><td><code>Stockout_Flag</code> all 0 → no positive samples, no stockout classification</td></tr>
+    <tr><td>Demand forecast</td><td><code>Demand_Forecast</code> correlates with sales 0.949 → answer already given, not retrained</td></tr>
+    <tr><td>Derived metrics</td><td>Inventory coverage <code>Inventory/Reorder_Point</code>, daily demand, demand volatility CV, replenishment gap</td></tr>
+    <tr><td>Two outputs</td><td>Row level <code>supply_clean.parquet</code> + SKU×warehouse <code>sku_level.parquet</code> (250 rows)</td></tr>
+  </table>
+</section>
+
+<section id="s3">
+  <div class="kicker">Part 3 · Key Metrics &amp; Charts</div>
+  <h2><span class="n">3.</span> Key numbers</h2>
+  <div class="grid cards">
+    <div class="card"><div class="num">91,250</div><div class="lbl">Transaction/day rows</div></div>
+    <div class="card"><div class="num">50</div><div class="lbl">SKU × 5 warehouses</div></div>
+    <div class="card"><div class="num">22.1%</div><div class="lbl">Days near reorder (≤1.2)</div></div>
+    <div class="card"><div class="num">5.3%</div><div class="lbl">Days below reorder</div></div>
+    <div class="card"><div class="num">27.7%</div><div class="lbl">Promo lift in sales</div></div>
+    <div class="card"><div class="num">8d</div><div class="lbl">Avg lead time (≤14)</div></div>
+  </div>
+
+  <div class="fig">
+    <h4>Inventory coverage distribution — 22% of days near reorder, 5% below</h4>
+    <p class="cap">Coverage = day inventory / reorder point; &lt;1 below reorder, 1–1.2 near stockout, ≥2 surplus</p>
+    <div class="bar"><div class="bl">Below reorder (&lt;1)</div><div class="track"><div class="fill" style="width:5%;background:#4338ca"></div></div><div class="bv">5.3% of days</div></div>
+    <div class="bar"><div class="bl">Near stockout (1–1.2)</div><div class="track"><div class="fill" style="width:17%;background:#6366f1"></div></div><div class="bv">22.1% of days</div></div>
+    <div class="bar"><div class="bl">Normal (1.2–2)</div><div class="track"><div class="fill" style="width:55%;background:#818cf8"></div></div><div class="bv">median coverage 1.53</div></div>
+    <div class="bar"><div class="bl">Surplus (≥2)</div><div class="track"><div class="fill" style="width:18%;background:#0ea5e9"></div></div><div class="bv">18.2% of days</div></div>
+    <div class="why">
+      <div class="tag so">Insight</div>
+      <p>Median coverage 1.53 (healthy overall), but <strong>22.1% of days are near reorder, 5.3% below</strong> — stockout risk is <strong>occasional, line-level</strong> (concentrated in certain SKUs/periods), not systematic all-year.</p>
+    </div>
+    <div class="why">
+      <div class="tag rec">Action</div>
+      <p>Build real-time monitoring for <strong>near/below-reorder SKU×warehouses</strong>, replenish on trigger; assess destocking surplus SKUs to free cash.</p>
+    </div>
+  </div>
+
+  <div class="fig">
+    <h4>Promotions lift sales significantly (+27.7%)</h4>
+    <p class="cap">Avg daily sales: promo days vs non-promo days</p>
+    <div class="bar"><div class="bl">Non-promo</div><div class="track"><div class="fill" style="width:78%;background:#818cf8"></div></div><div class="bv">19.5 units/day</div></div>
+    <div class="bar"><div class="bl">Promo</div><div class="track"><div class="fill" style="width:100%;background:#4338ca"></div></div><div class="bv">24.9 units/day · +27.7%</div></div>
+    <div class="why">
+      <div class="tag so">Insight</div>
+      <p>Promo-day average sales are <strong>27.7% higher</strong> — promotions effectively pull demand, but <strong>the demand rise quickly drains stock</strong>; without pre-stock, promos can actually raise stockout risk.</p>
+    </div>
+    <div class="why">
+      <div class="tag rec">Action</div>
+      <p>Pre-stock promo SKUs <strong>by the promo increment</strong> (use +27.7% as a replenishment multiplier), so a hot promo doesn't turn into a stockout.</p>
+    </div>
+  </div>
+
+  <div class="fig">
+    <h4>Demand is broadly volatile — all SKUs have CV&gt;0.4</h4>
+    <p class="cap">Demand volatility CV = std/mean (SKU×warehouse); &gt;0.4 = high volatility</p>
+    <div class="bar"><div class="bl">High-volatility SKU×WH share</div><div class="track"><div class="fill" style="width:100%;background:#4338ca"></div></div><div class="bv">100% (median CV 0.45)</div></div>
+    <div class="bar"><div class="bl">Mean safety stock (SS)</div><div class="track"><div class="fill" style="width:21%;background:#0ea5e9"></div></div><div class="bv">median 41.8 units</div></div>
+    <div class="why">
+      <div class="tag so">Insight</div>
+      <p>Demand volatility CV is broadly &gt;0.4 (median 0.45) — <strong>demand is very unstable</strong>. Fixed-proportion stocking tends to either stock out or pile up; safety stock must be differentiated by volatility.</p>
+    </div>
+    <div class="why">
+      <div class="tag rec">Action</div>
+      <p>Use the <strong>safety-stock formula SS=z·σ·√L</strong> (Part 4): the more volatile and the longer the lead time, the higher the safety stock — no one-size-fits-all.</p>
+    </div>
+  </div>
+
+  <div class="fig">
+    <h4>Lead time splits into three tiers — replenish lead must match</h4>
+    <p class="cap">SKU×warehouse tiered by average lead time (auto-detected by clustering)</p>
+    <div class="bar"><div class="bl">Short lead (~4d)</div><div class="track"><div class="fill" style="width:34%;background:#818cf8"></div></div><div class="bv">67 groups</div></div>
+    <div class="bar"><div class="bl">Medium (~7d)</div><div class="track"><div class="fill" style="width:43%;background:#6366f1"></div></div><div class="bv">86 groups</div></div>
+    <div class="bar"><div class="bl">Long (~12d)</div><div class="track"><div class="fill" style="width:48%;background:#4338ca"></div></div><div class="bv">97 groups</div></div>
+    <div class="why">
+      <div class="tag so">Insight</div>
+      <p>Lead time clearly separates into 4 / 7 / 12-day tiers — <strong>long-lead SKUs need earlier orders and a higher reorder point</strong>, otherwise they run dry before replenishment arrives.</p>
+    </div>
+    <div class="why">
+      <div class="tag rec">Action</div>
+      <p>Long-lead (~12d) SKUs: order earlier, raise the reorder point; short-lead can be more flexible (replenish closer to the reorder point).</p>
+    </div>
+  </div>
+
+  <div class="fig">
+    <h4>Replenishment priority — the relatively most-watched SKU×warehouses</h4>
+    <p class="cap">Ranked by "inventory − reorder point" gap (P1 smallest gap = relatively most-needed, P4 most surplus)</p>
+    <div class="bar"><div class="bl">P1 (most watched)</div><div class="track"><div class="fill" style="width:35%;background:#4338ca"></div></div><div class="bv">mean gap 140</div></div>
+    <div class="bar"><div class="bl">P2</div><div class="track"><div class="fill" style="width:58%;background:#6366f1"></div></div><div class="bv">233</div></div>
+    <div class="bar"><div class="bl">P3</div><div class="track"><div class="fill" style="width:76%;background:#818cf8"></div></div><div class="bv">304</div></div>
+    <div class="bar"><div class="bl">P4 (most surplus)</div><div class="track"><div class="fill" style="width:100%;background:#0ea5e9"></div></div><div class="bv">405</div></div>
+    <p class="muted" style="font-size:12px">Gaps are all positive (annual avg inventory ≥ reorder point); P1 is the closest to the reorder point, most worth watching first.</p>
+    <div class="why">
+      <div class="tag so">Insight</div>
+      <p>All SKU×warehouses have annual avg inventory above reorder (gaps positive), but the relative gaps differ a lot (P1 140 vs P4 405) — <strong>P1 is the least capital-efficient, closest to stockout risk</strong>, most needing prioritized replenishment/calibration.</p>
+    </div>
+    <div class="why">
+      <div class="tag rec">Action</div>
+      <p>Handle <strong>P1</strong> first (e.g. SKU_50/WH_4, smallest gap): either replenish or cut excess safety stock; destock surplus P4 SKUs to free cash.</p>
+    </div>
+  </div>
+</section>
+
+<section id="s4">
+  <div class="kicker">Part 4 · Replenishment Modeling</div>
+  <h2><span class="n">4.</span> Demand-volatility clustering + safety-stock formula (principle · why · how)</h2>
+
+  <h3>4.1 Why clustering instead of stockout classification</h3>
+  <p>This data has <strong>stockout labels all 0</strong> (no positives), so a stockout classifier cannot be trained. Instead, <strong>unsupervised clustering</strong>: group SKU×warehouses by demand mean, volatility CV, lead time, inventory coverage to identify <strong>similar replenishment-profile groups</strong>, and design a differentiated strategy per group — implementable without labels.</p>
+
+  <h3>4.2 Safety stock / reorder point formula (statistical principle)</h3>
+  <p>Two classic replenishment statistics (principle explained):</p>
+  <ul>
+    <li><strong>Safety stock</strong> <code>SS = z · σ_L</code>: σ_L is the std of demand within lead time (= daily demand σ × √lead time), z is the service-level Z-quantile (e.g. 90% service z≈1.28, 95% z≈1.65). The more volatile, the longer the lead, the higher the required service → the larger the safety stock.</li>
+    <li><strong>Reorder point</strong> <code>ROP = d·L + SS</code>: d daily demand × L lead time = expected consumption during lead, plus a safety buffer.</li>
+  </ul>
+  <p><strong>How.</strong> This report computes SS and ROP per SKU×warehouse with volatility-tiered z (high CV&gt;0.4 → z=1.65, else 1.28), then ranks by <code>inventory − ROP</code> gap to get the replenishment priority (P1–P4 in Part 3).</p>
+  <p><strong>Why not deep learning.</strong> Tabular, 50×5=250 groups, no stockout labels; clustering + statistical formula is explainable and directly implementable (the inventory team can explain "why this SKU needs replenishment"). DL has no labels here and is less explainable, with limited gain — consistent with "use only when the business needs it".</p>
+
+  <table>
+    <colgroup><col style="width:34%"><col style="width:66%"></colgroup>
+    <tr><th>Output</th><th>Value</th></tr>
+    <tr><td>Clusters</td><td>3 groups (short/medium/long lead: 4 / 7 / 12 days)</td></tr>
+    <tr><td>Safety stock SS median</td><td>41.8 units</td></tr>
+    <tr><td>Reorder point ROP median</td><td>202.1 units</td></tr>
+    <tr><td>SKU×WH below ROP</td><td>0% (annual avg sufficient; stockouts occasional)</td></tr>
+  </table>
+</section>
+
+<section id="s5">
+  <div class="kicker">Part 5 · Recommendations</div>
+  <h2><span class="n">5.</span> One actionable plan</h2>
+  <div class="grid two">
+    <div class="card">
+      <span class="pill">Real-time monitor</span>
+      <h3 style="margin-top:6px">1 · Near-stockout real-time alert</h3>
+      <p>22.1% of days near reorder, 5.3% below. Monitor SKU×WH with coverage ≤1.2 in real time, replenish on trigger.</p>
+    </div>
+    <div class="card">
+      <span class="pill">Promo stocking</span>
+      <h3 style="margin-top:6px">2 · Stock by promo increment</h3>
+      <p>Promos lift sales 27.7%. Scale promo-SKU replenishment by that factor, so a hot promo doesn't become a stockout.</p>
+    </div>
+    <div class="card">
+      <span class="pill">Differentiated</span>
+      <h3 style="margin-top:6px">3 · Differentiate by volatility/lead</h3>
+      <p>High-volatility (CV&gt;0.4) SKUs use z=1.65 high safety stock; long-lead (~12d) order earlier, raise ROP.</p>
+    </div>
+    <div class="card">
+      <span class="pill">Cash release</span>
+      <h3 style="margin-top:6px">4 · Destock surplus SKUs</h3>
+      <p>P4 surplus (gap ~405) SKUs destock to free cash; P1 prioritized replenish/calibrate to avoid inefficient capital use.</p>
+    </div>
+  </div>
+  <p class="muted">Repo deliverables: row level (<code>supply_clean.parquet</code>), SKU×WH (<code>sku_level.parquet</code>), clusters (<code>sku_clusters.parquet</code>), metrics/ML (<code>metrics.json</code>/<code>ml_result.json</code>), this report. Real stockout positives and order data are missing; stockout classification listed as next step (needs real stockout labels).</p>
+</section>
+
+</div>
+<footer>Supply Chain Replenishment Optimization — Jiawei Wang</footer>
+</body>
+</html>
