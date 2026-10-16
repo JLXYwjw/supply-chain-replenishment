@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>供应链补货优化分析</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='8' width='24' height='6' fill='%234338ca'/%3E%3Crect x='4' y='16' width='24' height='6' fill='%236366f1'/%3E%3Crect x='4' y='24' width='24' height='4' fill='%230ea5e9'/%3E%3C/svg%3E">
+<style>
+  :root{--indigo:#4338ca;--violet:#6366f1;--lilac:#e0e7ff;--cyan:#0ea5e9;--ink:#1e1b4b;--muted:#6b7280;--line:#e2e8f0;--bg:#f7f8fc;--card:#fff}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.7}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px 80px}
+  header.hero{background:linear-gradient(135deg,#312e81,#6366f1);color:#fff;padding:56px 24px 44px;margin-bottom:8px}
+  header.hero h1{margin:0 0 12px;font-size:30px;line-height:1.25}
+  header.hero .sub{opacity:.94;font-size:16px;max-width:920px}
+  header.hero .meta{margin-top:18px;font-size:13px;opacity:.85}
+  nav.tabs{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);z-index:5;padding:10px 24px}
+  nav.tabs .wrap{padding:0;display:flex;gap:6px;flex-wrap:wrap;max-width:1080px}
+  nav.tabs a{color:var(--indigo);text-decoration:none;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px}
+  nav.tabs a:hover{background:#eef0ff}
+  section{padding:36px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:22px;margin:0 0 8px}
+  h2 .n{color:var(--cyan)}
+  .kicker{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--cyan);margin-bottom:4px}
+  h3{font-size:17px;margin:24px 0 8px}
+  p,li{font-size:14.5px}
+  .muted{color:var(--muted)}
+  .grid{display:grid;gap:16px}
+  .cards{grid-template-columns:repeat(3,1fr);margin:18px 0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(67,56,202,.06)}
+  .card .num{font-size:24px;font-weight:800;color:var(--indigo)}
+  .card .lbl{font-size:12.5px;color:var(--muted)}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:14px 0;background:#fff;table-layout:fixed}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top;overflow-wrap:break-word}
+  th{background:#eef0ff;font-weight:700;color:var(--indigo)}
+  .fig{margin:22px 0;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 16px;box-shadow:0 1px 3px rgba(67,56,202,.06)}
+  .fig h4{font-size:15px;margin:0 0 4px}
+  .fig .cap{font-size:12px;color:var(--muted);margin:0 0 12px}
+  .fig .why{display:flex;gap:12px;margin-top:14px;border-top:1px dashed var(--line);padding-top:12px}
+  .fig .why .tag{flex:0 0 60px;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+  .fig .why .tag.so{color:var(--indigo)}
+  .fig .why .tag.rec{color:var(--cyan)}
+  .fig .why p{margin:0;font-size:13.5px}
+  .pill{display:inline-block;background:#eef0ff;color:var(--indigo);border-radius:999px;padding:2px 10px;font-size:12px;font-weight:600;margin-right:6px}
+  .callout{background:#f0f4ff;border:1px solid #c7d2fe;border-left:4px solid var(--indigo);padding:12px 16px;border-radius:8px;margin:14px 0;font-size:14px}
+  .two{grid-template-columns:1fr 1fr}
+  @media(max-width:720px){.two{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.bar{flex-wrap:wrap}.bar .bl{flex:0 0 100%;text-align:left;font-size:12px}.bar .bv{flex:0 0 130px;font-size:11px}.bar .track{min-width:40px}}
+  footer{padding:30px 24px 60px;font-size:12.5px;color:var(--muted)}
+  ul{margin:6px 0 14px;padding-left:20px}
+  .bar{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:13px}
+  .bar .bl{width:200px;flex:0 0 200px;text-align:right;color:var(--ink)}
+  .bar .track{flex:1;background:#e2e8f0;border-radius:6px;height:22px;position:relative;min-width:60px}
+  .bar .fill{height:100%;border-radius:6px}
+  .bar .bv{flex:0 0 150px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker" style="color:#c7d2fe">数据分析项目 · 供应链补货优化（Inventory Replenishment）</div>
+    <h1>供应链补货优化分析</h1>
+    <p class="sub">91,250 行真实供应链库存数据（2024 全年）：识别库存过近/过远补货点、需求高波动与前置时间差异，给出安全库存与再订货优化方向——避免缺货丢单、释放过度囤货资金。</p>
+    <div class="meta">数据来源：供应链库存数据集 · 91,250 行 / 50 SKU / 5 仓 / 4 区域 · 2024-01-01 ~ 2024-12-30</div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="wrap">
+    <a href="#s1"><span class="n">1</span> · 分析目标</a>
+    <a href="#s2"><span class="n">2</span> · 数据边界与清洗</a>
+    <a href="#s3"><span class="n">3</span> · 指标与图表</a>
+    <a href="#s4"><span class="n">4</span> · 补货建模</a>
+    <a href="#s5"><span class="n">5</span> · 建议</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<section id="s1">
+  <div class="kicker">第一部分 · 业务目标</div>
+  <h2><span class="n">1.</span> 为什么做这个分析</h2>
+  <p>零售/制造供应链在<strong>缺货丢单</strong>与<strong>过度囤货占资金</strong>之间权衡。核心问题：</p>
+  <ul>
+    <li><strong>库存健康度</strong>：哪些 SKU/仓库存<strong>贴近补货点</strong>（临缺货风险）或<strong>远超需求</strong>（资金占用）？</li>
+    <li><strong>补货策略</strong>：需求波动大的 SKU 与前置时间长的 SKU，需要更高的安全库存/再订货点。</li>
+  </ul>
+  <p><strong>一句话目标：</strong> 用需求波动 + 前置时间 + 库存覆盖率，识别最需关注的 SKU/仓并给出补货优化方向。</p>
+  <p><strong>诚实边界（先讲清楚）。</strong> 该数据是合成网格（50×5×365，无缺失）：① <strong>缺货标签全为 0</strong>，无正样本 → 缺货分类做不了；② <strong>需求预测列与销量相关 0.949</strong> → 需求已"给定答案"，重训预测是自欺。因此本项目<strong>不做假预测</strong>，做库存健康度与补货策略的<strong>决策支持</strong>。</p>
+</section>
+
+<section id="s2">
+  <div class="kicker">第二部分 · 数据边界与清洗</div>
+  <h2><span class="n">2.</span> 数据说明与预处理</h2>
+  <table>
+    <colgroup><col style="width:34%"><col style="width:66%"></colgroup>
+    <tr><th>维度</th><th>说明</th></tr>
+    <tr><td>结构</td><td>50 SKU × 5 仓库 × 365 天 = 91,250 行；4 区域；10 供应商</td></tr>
+    <tr><td>缺失</td><td>全列 0 缺失（合成网格，规整）</td></tr>
+    <tr><td>缺货标签</td><td><code>Stockout_Flag</code> 全为 0 → 无缺货正样本，不做缺货分类</td></tr>
+    <tr><td>需求预测</td><td><code>Demand_Forecast</code> 与销量相关 0.949 → 已给定答案，不重训</td></tr>
+    <tr><td>派生指标</td><td>库存覆盖率 <code>Inventory/Reorder_Point</code>、日均需求、需求波动 CV、补货差</td></tr>
+    <tr><td>两表输出</td><td>行级 <code>supply_clean.parquet</code> + SKU×仓 <code>sku_level.parquet</code>（250 条）</td></tr>
+  </table>
+</section>
+
+<section id="s3">
+  <div class="kicker">第三部分 · 核心指标与图表</div>
+  <h2><span class="n">3.</span> 关键数字</h2>
+  <div class="grid cards">
+    <div class="card"><div class="num">91,250</div><div class="lbl">交易/天行</div></div>
+    <div class="card"><div class="num">50</div><div class="lbl">SKU × 5 仓</div></div>
+    <div class="card"><div class="num">22.1%</div><div class="lbl">库存贴近补货点(≤1.2)</div></div>
+    <div class="card"><div class="num">5.3%</div><div class="lbl">库存已低于补货点</div></div>
+    <div class="card"><div class="num">27.7%</div><div class="lbl">促销销量提升</div></div>
+    <div class="card"><div class="num">8天</div><div class="lbl">平均前置时间(≤14)</div></div>
+  </div>
+
+  <div class="fig">
+    <h4>库存覆盖率分布 —— 22% 天数贴近补货点，5% 已低于</h4>
+    <p class="cap">库存覆盖率 = 当日库存 / 再订货点；&lt;1 已低于补货点、1–1.2 临缺货、≥2 富余</p>
+    <div class="bar"><div class="bl">已低于补货点（&lt;1）</div><div class="track"><div class="fill" style="width:5%;background:#4338ca"></div></div><div class="bv">5.3% 天数</div></div>
+    <div class="bar"><div class="bl">临缺货（1–1.2）</div><div class="track"><div class="fill" style="width:17%;background:#6366f1"></div></div><div class="bv">22.1% 天数</div></div>
+    <div class="bar"><div class="bl">正常（1.2–2）</div><div class="track"><div class="fill" style="width:55%;background:#818cf8"></div></div><div class="bv">中位覆盖率 1.53</div></div>
+    <div class="bar"><div class="bl">富余（≥2）</div><div class="track"><div class="fill" style="width:18%;background:#0ea5e9"></div></div><div class="bv">18.2% 天数</div></div>
+    <div class="why">
+      <div class="tag so">洞察</div>
+      <p>库存覆盖率中位 1.53（总体健康），但<strong>22.1% 天数贴近补货点、5.3% 已低于</strong>——缺货风险是<strong>偶发的行级事件</strong>（集中在某些 SKU/时段），而非系统性全年缺货。</p>
+    </div>
+    <div class="why">
+      <div class="tag rec">建议</div>
+      <p>对<strong>贴近/低于补货点的 SKU×仓</strong>建实时监控，触发即补货；对富余 SKU 评估去库存释放资金。</p>
+    </div>
+  </div>
+
+  <div class="fig">
+    <h4>促销显著提升销量（+27.7%）</h4>
+    <p class="cap">促销日 vs 非促销日平均日销量</p>
+    <div class="bar"><div class="bl">非促销日</div><div class="track"><div class="fill" style="width:78%;background:#818cf8"></div></div><div class="bv">19.5 件/日</div></div>
+    <div class="bar"><div class="bl">促销日</div><div class="track"><div class="fill" style="width:100%;background:#4338ca"></div></div><div class="bv">24.9 件/日 · +27.7%</div></div>
+    <div class="why">
+      <div class="tag so">洞察</div>
+      <p>促销日平均销量比非促销日高 <strong>27.7%</strong>——促销是有效的需求拉动，但也意味着<strong>促销期需求上升会快速消耗库存</strong>，若不提前备货反而加大缺货风险。</p>
+    </div>
+    <div class="why">
+      <div class="tag rec">建议</div>
+      <p>促销 SKU<strong>提前按促销增量备货</strong>（销量 +27.7% 作为补货放大系数），避免促销热卖变缺货。</p>
+    </div>
+  </div>
+
+  <div class="fig">
+    <h4>需求普遍高波动 —— 全部 SKU 波动 CV&gt;0.4</h4>
+    <p class="cap">需求波动 CV = 标准差/均值（SKU×仓）；&gt;0.4 为高波动</p>
+    <div class="bar"><div class="bl">高波动 SKU×仓占比</div><div class="track"><div class="fill" style="width:100%;background:#4338ca"></div></div><div class="bv">100%（CV中位 0.45）</div></div>
+    <div class="bar"><div class="bl">均值安全库存（SS）</div><div class="track"><div class="fill" style="width:21%;background:#0ea5e9"></div></div><div class="bv">中位 41.8 件</div></div>
+    <div class="why">
+      <div class="tag so">洞察</div>
+      <p>需求波动 CV 普遍 &gt;0.4（中位 0.45）——<strong>需求很不稳定</strong>。固定比例备货容易要么缺货、要么积压，需要按波动差异化设置安全库存。</p>
+    </div>
+    <div class="why">
+      <div class="tag rec">建议</div>
+      <p>用<strong>安全库存公式 SS=z·σ·√L</strong>（见第四部分）：波动越大、前置时间越长，安全库存越高——避免一刀切。</p>
+    </div>
+  </div>
+
+  <div class="fig">
+    <h4>前置时间分三档 —— 补货提前量要匹配</h4>
+    <p class="cap">SKU×仓按平均前置时间分层（聚类自动识别）</p>
+    <div class="bar"><div class="bl">短前置（~4天）</div><div class="track"><div class="fill" style="width:34%;background:#818cf8"></div></div><div class="bv">67 组</div></div>
+    <div class="bar"><div class="bl">中前置（~7天）</div><div class="track"><div class="fill" style="width:43%;background:#6366f1"></div></div><div class="bv">86 组</div></div>
+    <div class="bar"><div class="bl">长前置（~12天）</div><div class="track"><div class="fill" style="width:48%;background:#4338ca"></div></div><div class="bv">97 组</div></div>
+    <div class="why">
+      <div class="tag so">洞察</div>
+      <p>前置时间在 4 / 7 / 12 天三档明显分层——<strong>长前置 SKU 需要更早下单、更高再订货点</strong>，否则补货到货前就会断货。</p>
+    </div>
+    <div class="why">
+      <div class="tag rec">建议</div>
+      <p>长前置（~12 天）SKU：提前下单、提高再订货点；短前置可更柔性（接近再订货再补）。</p>
+    </div>
+  </div>
+
+  <div class="fig">
+    <h4>补货优先级 —— 相对最需关注的 SKU×仓</h4>
+    <p class="cap">按"库存 − 再订货点"缺口排序（P1 缺口最小=相对最需补，P4 最富余）</p>
+    <div class="bar"><div class="bl">P1（最需关注）</div><div class="track"><div class="fill" style="width:35%;background:#4338ca"></div></div><div class="bv">均值缺口 140</div></div>
+    <div class="bar"><div class="bl">P2</div><div class="track"><div class="fill" style="width:58%;background:#6366f1"></div></div><div class="bv">233</div></div>
+    <div class="bar"><div class="bl">P3</div><div class="track"><div class="fill" style="width:76%;background:#818cf8"></div></div><div class="bv">304</div></div>
+    <div class="bar"><div class="bl">P4（最富余）</div><div class="track"><div class="fill" style="width:100%;background:#0ea5e9"></div></div><div class="bv">405</div></div>
+    <p class="muted" style="font-size:12px">缺口均为正（SKU×仓年均库存 ≥ 再订货点）；P1 是最接近补货点的一批，最应优先关注。</p>
+    <div class="why">
+      <div class="tag so">洞察</div>
+      <p>SKU×仓年均库存都高于再订货点（缺口全正），但相对差距大（P1 缺口 140 vs P4 缺口 405）——<strong>P1 是资金占用效率最低、最接近断货风险的一批</strong>，最需优先排产补货/校准。</p>
+    </div>
+    <div class="why">
+      <div class="tag rec">建议</div>
+      <p>先处理 <strong>P1</strong>（如 SKU_50/WH_4，缺口最小）：要么补货到位，要么下调过量安全库存；P4 富余 SKU 去库存回笼资金。</p>
+    </div>
+  </div>
+</section>
+
+<section id="s4">
+  <div class="kicker">第四部分 · 补货建模</div>
+  <h2><span class="n">4.</span> 需求波动聚类 + 安全库存公式（原理 · 为什么 · 怎么用）</h2>
+
+  <h3>4.1 为什么做聚类而不是缺货分类</h3>
+  <p>本数据<strong>缺货标签全为 0</strong>（无正样本），无法训练缺货分类器。改用<strong>无监督聚类</strong>：按 SKU×仓的需求均值、波动 CV、前置时间、库存覆盖率分组，识别<strong>补货特征相似的组</strong>，为每组设计差异化策略——无需标签也能落地。</p>
+
+  <h3>4.2 安全库存 / 再订货点公式（统计原理）</h3>
+  <p>补货两个经典统计量（解释原理）：</p>
+  <ul>
+    <li><strong>安全库存</strong> <code>SS = z · σ_L</code>：σ_L 是前置时间内需求的标准差（= 日需求 σ × √前置时间），z 是服务水平的 Z 分位（如 90% 服务水平 z≈1.28，95% z≈1.65）。波动越大、前置越长、要求服务水平越高 → 安全库存越大。</li>
+    <li><strong>再订货点</strong> <code>ROP = d·L + SS</code>：d 日均需求 × L 前置时间 = 前置期期望消耗，加安全库存兜底。</li>
+  </ul>
+  <p><strong>怎么用。</strong> 本报告对每个 SKU×仓按波动分档 z（高波动 CV&gt;0.4 → z=1.65，否则 1.28）计算 SS 与 ROP，再用 <code>库存 − ROP</code> 缺口排序得到补货优先级（第三部分 P1–P4）。</p>
+  <p><strong>为什么不用深度学习。</strong> 表格型、50×5=250 组、无缺货标签；聚类 + 统计公式已可解释、直接落地（库存团队能讲清"为什么这个 SKU 要补"）。DL 在此无标签且不可解释，收益有限——与"业务需要才用"一致。</p>
+
+  <table>
+    <colgroup><col style="width:34%"><col style="width:66%"></colgroup>
+    <tr><th>产出</th><th>数值</th></tr>
+    <tr><td>聚类组</td><td>3 组（短/中/长前置：4 / 7 / 12 天）</td></tr>
+    <tr><td>安全库存 SS 中位</td><td>41.8 件</td></tr>
+    <tr><td>再订货点 ROP 中位</td><td>202.1 件</td></tr>
+    <tr><td>库存低于 ROP 的 SKU×仓</td><td>0%（年均库存充足，缺货为偶发）</td></tr>
+  </table>
+</section>
+
+<section id="s5">
+  <div class="kicker">第五部分 · 建议</div>
+  <h2><span class="n">5.</span> 汇总成一份可落地的方案</h2>
+  <div class="grid two">
+    <div class="card">
+      <span class="pill">实时监控</span>
+      <h3 style="margin-top:6px">1 · 临缺货实时预警</h3>
+      <p>22.1% 天数库存贴近补货点、5.3% 已低于。对覆盖率 ≤1.2 的 SKU×仓建实时监控，触发即补货。</p>
+    </div>
+    <div class="card">
+      <span class="pill">促销备货</span>
+      <h3 style="margin-top:6px">2 · 促销按增量备货</h3>
+      <p>促销提升销量 27.7%。促销 SKU 按该系数放大补货，避免促销热卖变缺货。</p>
+    </div>
+    <div class="card">
+      <span class="pill">差异化补货</span>
+      <h3 style="margin-top:6px">3 · 按波动/前置差异化</h3>
+      <p>高波动(CV>0.4) SKU 用 z=1.65 高安全库存；长前置(~12天)提前下单、提高 ROP。</p>
+    </div>
+    <div class="card">
+      <span class="pill">库存回笼</span>
+      <h3 style="margin-top:6px">4 · 富余 SKU 去库存</h3>
+      <p>P4 富余（缺口~405）SKU 去库存释放资金；P1 优先补货/校准，避免资金低效占用。</p>
+    </div>
+  </div>
+  <p class="muted">仓库交付物：行级（<code>supply_clean.parquet</code>）、SKU×仓（<code>sku_level.parquet</code>）、聚类（<code>sku_clusters.parquet</code>）、指标/ML（<code>metrics.json</code>/<code>ml_result.json</code>）、本报告。缺货正样本与真实订单数据缺失，缺货分类列为下一步（需真实缺货标签）。</p>
+</section>
+
+</div>
+</body>
+</html>
