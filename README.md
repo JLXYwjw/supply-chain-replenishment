@@ -29,11 +29,11 @@ replenishment decision support** instead, and says so plainly.
 
 ## Charts
 
-![Coverage distribution](assets/chart_01.png)
-![Promotion lift](assets/chart_02.png)
-![Demand volatility](assets/chart_03.png)
-![Lead-time tiers](assets/chart_04.png)
-![Replenishment priority](assets/chart_05.png)
+![Coverage distribution](assets/chart_EN_01.png)
+![Promotion lift](assets/chart_EN_02.png)
+![Demand volatility](assets/chart_EN_03.png)
+![Lead-time tiers](assets/chart_EN_04.png)
+![Replenishment priority](assets/chart_EN_05.png)
 
 > Full interactive report: `报告/供应链补货优化分析.html` — GitHub doesn't render HTML; open locally after cloning.
 
