@@ -35,7 +35,7 @@ replenishment decision support** instead, and says so plainly.
 ![Lead-time tiers](assets/chart_EN_04.png)
 ![Replenishment priority](assets/chart_EN_05.png)
 
-> Full interactive report: `报告/供应链补货优化分析.html` — GitHub doesn't render HTML; open locally after cloning.
+> Full interactive report: open `index.html` (English) or `index.zh-CN.html` (Chinese) after cloning — GitHub doesn't render HTML.
 
 ## Key verified numbers
 
@@ -82,7 +82,8 @@ pytest tests/ -q
 ```
 scripts/ clean_data.py / analyze.py / ml_analysis.py
 tests/   test_cleaning.py, test_report_numbers.py
-报告/   供应链补货优化分析.html  (indigo-violet theme, each chart Insight+Action)
+index.html   # English interactive report
+index.zh-CN.html  # Chinese report (indigo-violet theme, each chart Insight+Action)
 ```
 
 — Jiawei Wang
