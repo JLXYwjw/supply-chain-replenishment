@@ -1,39 +1,39 @@
-# 供应链补货优化 —— 分析计划
+# Supply Chain Replenishment Optimization — Analysis Plan
 
-**业务方向**：零售/制造供应链库存优化。缺货=丢单丢收入，过度囤货=占资金。本项目分析库存健康度、需求波动与补货策略，给出可落地的安全库存/再订货建议。
+**Business direction**: retail/manufacturing supply-chain inventory optimization. Stockout = lost orders and revenue; overstocking = tied-up capital. This project analyzes inventory health, demand volatility, and replenishment strategy, and gives actionable safety-stock / reorder-point recommendations.
 
-## 1. 诚实的数据边界（先讲清楚）
-该数据集是**合成网格数据**（50 SKU × 5 仓 × 365 天 = 91,250 行，2024 全年，无缺失）。两个关键限制：
-- **Stockout_Flag 全为 0**（无缺货正样本）→ **无法做缺货分类**（有监督缺货预测无意义）。
-- **Demand_Forecast 与 Units_Sold 相关 0.949** → 需求列几乎已"给定答案"，重新训练需求预测是自欺。
-因此本项目**不做假预测**，改做**补货决策支持**：用需求波动、前置时间、库存 vs 补货点，识别库存不合理的 SKU/仓并给出优化方向。
+## 1. Honest Data Boundaries (stated first)
+This dataset is **synthetic grid data** (50 SKUs × 5 warehouses × 365 days = 91,250 rows, full year 2024, no missing). Two key limits:
+- **Stockout_Flag is all 0** (no stockout positive samples) → **stockout classification is not possible** (supervised stockout prediction is meaningless).
+- **Demand_Forecast correlates 0.949 with Units_Sold** → the demand column almost already gives the answer; retraining a demand forecast would be self-deception.
+Therefore this project **does not fake prediction**; instead it does **replenishment decision support**: using demand volatility, lead time, and inventory vs reorder point, identify SKU/warehouse combinations with unreasonable inventory and give optimization directions.
 
-## 2. 分析目的
-- 识别**库存过近补货点**（临缺货）与**库存远超需求**（过度囤货）的 SKU/仓
-- 按**需求波动**聚类 SKU，制定差异化补货策略（高波动→高安全库存）
-- 结合**前置时间**给出再订货点/安全库存建议
+## 2. Analysis Purpose
+- Identify SKUs/warehouses **too close to reorder point** (near-stockout) and **far above demand** (overstocking).
+- Cluster SKUs by **demand volatility** to set differentiated replenishment strategy (high volatility → high safety stock).
+- Given **lead time**, give reorder-point / safety-stock recommendations.
 
-## 3. 分析指标
-- 库存覆盖率 `Inventory_Level / Reorder_Point`
-- 接近补货点比例（覆盖率 ≤1.2）、库存富余比例（覆盖率 ≥2）
-- 需求波动 `CV = std/mean`（SKU 级）
-- 前置时间分布、Order_Quantity vs 日均需求
-- 区域/仓库存分布、促销对销量的影响
+## 3. Analysis Metrics
+- Inventory coverage `Inventory_Level / Reorder_Point`.
+- Share near reorder point (coverage ≤1.2), share with surplus (coverage ≥2).
+- Demand volatility `CV = std/mean` (SKU level).
+- Lead-time distribution, Order_Quantity vs daily demand.
+- Region/warehouse inventory distribution, promotion effect on sales.
 
-## 4. 建模（ML + 统计；原理/为什么/怎么用）
-- **需求波动聚类**：按 SKU 需求特征（均值/波动/季节性）KMeans 聚类 → 分策略组
-- **安全库存/再订货点**：统计公式 `SS = z × σ_L`，`ROP = d × L + SS`（解释原理）
-- 不用缺货分类（无正样本）；不用 DL（表格、聚类、需解释，树/统计足够）
+## 4. Modeling (ML + statistics; principle/why/how)
+- **Demand-volatility clustering**: KMeans cluster SKUs by demand features (mean/volatility/seasonality) → strategy groups.
+- **Safety stock / reorder point**: statistical formula `SS = z × σ_L`, `ROP = d × L + SS` (explain the principle).
+- No stockout classification (no positive samples); no DL (tabular, clustering, needs explanation; trees/statistics are enough).
 
-## 5. 可视化（每图 Insight+Action）
-- 库存覆盖率分布（临缺货/富余）
-- 需求波动聚类（策略组）
-- 前置时间分布
-- 库存 vs 补货点散点/条形
-- 区域库存分布
+## 5. Visualizations (each chart Insight+Action)
+- Inventory coverage distribution (near-stockout / surplus).
+- Demand-volatility clustering (strategy groups).
+- Lead-time distribution.
+- Inventory vs reorder point scatter/bars.
+- Regional inventory distribution.
 
-## 6. 建议（落地）
-- 高波动 SKU 提高安全库存
-- 长前置时间 SKU 提前补货、提高再订货点
-- 库存富余 SKU 去库存释放资金
-- 仓/区域差异化补货
+## 6. Recommendations (landing)
+- Raise safety stock for high-volatility SKUs.
+- Replenish earlier and raise reorder point for long-lead-time SKUs.
+- De-stock surplus SKUs to free capital.
+- Differentiate replenishment by warehouse/region.
