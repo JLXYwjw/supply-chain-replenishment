@@ -41,6 +41,12 @@ KMeans clustering + statistical safety-stock formulas — tabular, 250 groups, n
 labels; interpretable and directly deployable. **No DL**: no labels, needs to
 be explainable to inventory teams, and tree/statistical methods already fit.
 
+## 报告预览
+
+![报告预览](assets/report-preview.jpg)
+
+> 完整交互报告：`报告/供应链补货优化分析.html` —— GitHub 不渲染仓库内 HTML，clone 后本地打开。
+
 ## Layout
 
 ```
