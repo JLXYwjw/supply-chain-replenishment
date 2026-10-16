@@ -30,7 +30,7 @@
 ![前置时间分三档](assets/chart_04.png)
 ![补货优先级](assets/chart_05.png)
 
-> 完整交互版报告：`报告/供应链补货优化分析.html`——GitHub 不渲染仓库内 HTML，clone 后本地打开。
+> 完整交互版报告：`report/供应链补货优化分析.html`——GitHub 不渲染仓库内 HTML，clone 后本地打开。
 
 ## 五、关键数字
 
@@ -75,7 +75,7 @@ pytest tests/ -q
 ```
 scripts/ clean_data.py / analyze.py / ml_analysis.py
 tests/   test_cleaning.py, test_report_numbers.py
-报告/   供应链补货优化分析.html  （靛蓝紫配色，每个图表 Insight+Action）
+report/   供应链补货优化分析.html  （靛蓝紫配色，每个图表 Insight+Action）
 ```
 
 — Jiawei Wang
