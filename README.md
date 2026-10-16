@@ -49,4 +49,20 @@ tests/   test_cleaning.py, test_report_numbers.py
 报告/   供应链补货优化分析.html  (indigo-violet theme, each chart Insight+Action)
 ```
 
+## 数据来源
+
+原始数据在项目内 `data/raw/`（不入 git——clone 后请自行下载）。
+
+| 文件 | 说明 | Kaggle 下载 |
+|---|---|---|
+| `supply_chain_dataset1.csv` | SKU×仓库×日期网格，91,250 行（2024） | `kaggle datasets download -d ziya07/high-dimensional-supply-chain-inventory-dataset -p data/raw --unzip` |
+
+Kaggle 页面：https://www.kaggle.com/datasets/ziya07/high-dimensional-supply-chain-inventory-dataset
+
+```bash
+pip install kaggle
+kaggle datasets download -d ziya07/high-dimensional-supply-chain-inventory-dataset -p data/raw --unzip
+# 需要 kaggle.json / KAGGLE_USERNAME + KAGGLE_KEY 认证
+```
+
 — Jiawei Wang
