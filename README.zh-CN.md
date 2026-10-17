@@ -1,4 +1,6 @@
 # 供应链补货优化分析（Supply Chain Replenishment Optimization）
+![CI](https://github.com/JLXYwjw/supply-chain-replenishment/actions/workflows/ci.yml/badge.svg)
+
 
 > 项目目标：库存夹在两种失败之间——**缺货（丢收入）** 与 **超储（占用资金）**。在库存数据（91,250 行，50 SKU × 5 仓 × 365 天，2024）上识别**哪些 SKU×仓需要关注、该怎么补货**——用需求波动与前置时间优化安全库存与再订货点。
 > 数据：真实库存网格数据（91,250 行，50 SKU × 5 仓 × 365 天，2024）。
@@ -79,3 +81,9 @@ report/   供应链补货优化分析.html  （靛蓝紫配色，每个图表 In
 ```
 
 — Jiawei Wang
+
+## CI / 质量门
+
+每次 push 或拉取请求都会触发 [GitHub Actions](.github/workflows/ci.yml) 工作流：质量门检查「英文文档不含中文、引用的图表都存在、中英 README 与 index 齐全」，随后运行 `pytest` 测试套件。
+
+![CI](https://github.com/JLXYwjw/supply-chain-replenishment/actions/workflows/ci.yml/badge.svg)

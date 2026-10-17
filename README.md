@@ -1,4 +1,6 @@
 # Supply Chain — Replenishment Optimization
+![CI](https://github.com/JLXYwjw/supply-chain-replenishment/actions/workflows/ci.yml/badge.svg)
+
 
 **The business problem.** Retail/manufacturing inventory sits between two failure
 modes: **stock out (lost revenue)** and **over-stocking (tied-up capital)**. On
@@ -87,3 +89,9 @@ index.zh-CN.html  # Chinese report (indigo-violet theme, each chart Insight+Acti
 ```
 
 — Jiawei Wang
+
+## CI / Quality Gate
+
+Every push or pull request runs a [GitHub Actions](.github/workflows/ci.yml) workflow: a quality gate checks that English docs contain no Chinese, every referenced chart exists, and the bilingual README + index are all present; then `pytest` runs the test suite.
+
+![CI](https://github.com/JLXYwjw/supply-chain-replenishment/actions/workflows/ci.yml/badge.svg)
