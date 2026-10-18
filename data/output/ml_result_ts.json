@@ -1,0 +1,31 @@
+{
+ "series": "SKU_1 × WH_1",
+ "n_train": 292,
+ "n_test": 73,
+ "naive_rmse": 12.515,
+ "naive_mae": 11.288,
+ "naive7_rmse": 6.496,
+ "naive7_mae": 5.041,
+ "arima_rmse": 7.497,
+ "arima_mae": 6.293,
+ "ml_rmse": 5.581,
+ "ml_mae": 4.252,
+ "arima_gain_vs_naive_pct": -40.1,
+ "ml_gain_vs_naive_pct": -55.41,
+ "best_model": "ml",
+ "y_mean": 20.47,
+ "y_std": 8.91,
+ "train_info": {
+  "cut": "80/20 time-ordered",
+  "arima_order": "(1,1,1)",
+  "ml_model": "RandomForestRegressor(n=500, max_depth=10)",
+  "ml_features": [
+   "lag1",
+   "lag7",
+   "lag_avg7",
+   "weekday",
+   "is_promo"
+  ],
+  "metric": "RMSE & MAE on test"
+ }
+}

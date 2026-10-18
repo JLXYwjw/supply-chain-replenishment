@@ -215,6 +215,18 @@
   <p><strong>怎么用。</strong> 本报告对每个 SKU×仓按波动分档 z（高波动 CV&gt;0.4 → z=1.65，否则 1.28）计算 SS 与 ROP，再用 <code>库存 − ROP</code> 缺口排序得到补货优先级（第三部分 P1–P4）。</p>
   <p><strong>为什么不用深度学习。</strong> 表格型、50×5=250 组、无缺货标签；聚类 + 统计公式已可解释、直接落地（库存团队能讲清"为什么这个 SKU 要补"）。DL 在此无标签且不可解释，收益有限——与"业务需要才用"一致。</p>
 
+  <h3>4.3 时序 baseline 消融（实测）：销量可预测性验证</h3>
+  <p>虽不做需求预测（答案已给），但<strong>销量是可预测的</strong>——对 SKU_1×WH_1 的 365 天日销量做基线族对比（时间顺序 80/20 切分，防未来泄漏；评估 RMSE/MAE）：</p>
+  <table>
+    <colgroup><col style="width:32%"><col style="width:22%"><col style="width:22%"><col style="width:24%"></colgroup>
+    <tr><th>基线</th><th>RMSE</th><th>MAE</th><th>相对 Naive</th></tr>
+    <tr><td>Naive（昨天=今天）</td><td>12.52</td><td>11.29</td><td>—</td></tr>
+    <tr><td>Naive-7（上周同天）</td><td>6.50</td><td>5.04</td><td>−48%</td></tr>
+    <tr><td>ARIMA(1,1,1)</td><td>7.50</td><td>6.29</td><td>−40%</td></tr>
+    <tr><td>ML+滞后特征（RF）</td><td>5.58</td><td>4.25</td><td>−55%（最佳）</td></tr>
+  </table>
+  <p><strong>结论。</strong> 销量有强周季节（Naive-7 已比 Naive 好 48%），ML 滞后特征最佳（RMSE 5.58，比 Naive 低 55%）——<strong>销量可预测</strong>，说明"需求波动"是结构性而非不可预测噪声，进一步支撑差异化安全库存；但<strong>需求预测列=答案（相关 0.949）</strong>，故主产出仍是 SS/ROP 决策支持，时序仅作可预测性验证。</p>
+
   <table>
     <colgroup><col style="width:34%"><col style="width:66%"></colgroup>
     <tr><th>产出</th><th>数值</th></tr>

@@ -2,6 +2,7 @@
 """供应链报告数字一致性。"""
 import json
 from pathlib import Path
+import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "data" / "output"
@@ -48,3 +49,16 @@ def test_clusters_match_html():
 def test_honest_boundary_in_html():
     h = _html()
     assert "缺货分类" in h and "需求" in h and "0.949" in h
+
+
+def test_ts_baseline_matches_html():
+    # 时序 baseline 消融：ML+滞后特征最佳，且比 Naive 明显提升
+    p = OUT / "ml_result_ts.json"
+    if not p.exists():
+        pytest.skip("ml_result_ts.json absent (run scripts/ml_timeseries.py)")
+    ml = json.loads(p.read_text(encoding="utf-8"))
+    assert ml["best_model"] == "ml"
+    assert ml["ml_rmse"] < ml["naive_rmse"]  # ML 显著优于 Naive
+    assert ml["arima_rmse"] < ml["naive_rmse"]  # ARIMA 也优于 Naive
+    assert ml["ml_gain_vs_naive_pct"] < -40  # 至少 -40%
+    assert "5.58" in _html() and "12.52" in _html()

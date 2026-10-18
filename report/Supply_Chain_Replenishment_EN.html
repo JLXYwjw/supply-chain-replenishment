@@ -215,6 +215,18 @@
   <p><strong>How.</strong> This report computes SS and ROP per SKU×warehouse with volatility-tiered z (high CV&gt;0.4 → z=1.65, else 1.28), then ranks by <code>inventory − ROP</code> gap to get the replenishment priority (P1–P4 in Part 3).</p>
   <p><strong>Why not deep learning.</strong> Tabular, 50×5=250 groups, no stockout labels; clustering + statistical formula is explainable and directly implementable (the inventory team can explain "why this SKU needs replenishment"). DL has no labels here and is less explainable, with limited gain — consistent with "use only when the business needs it".</p>
 
+  <h3>4.3 Time-series baseline ablation (measured): sales predictability check</h3>
+  <p>We do not forecast demand (answer already given), but <strong>sales are predictable</strong> — on SKU_1×WH_1's 365 daily sales we run a baseline family (time-ordered 80/20 split, no future leakage; RMSE/MAE):</p>
+  <table>
+    <colgroup><col style="width:32%"><col style="width:22%"><col style="width:22%"><col style="width:24%"></colgroup>
+    <tr><th>Baseline</th><th>RMSE</th><th>MAE</th><th>vs Naive</th></tr>
+    <tr><td>Naive (yesterday = today)</td><td>12.52</td><td>11.29</td><td>—</td></tr>
+    <tr><td>Naive-7 (same day last week)</td><td>6.50</td><td>5.04</td><td>−48%</td></tr>
+    <tr><td>ARIMA(1,1,1)</td><td>7.50</td><td>6.29</td><td>−40%</td></tr>
+    <tr><td>ML + lag features (RF)</td><td>5.58</td><td>4.25</td><td>−55% (best)</td></tr>
+  </table>
+  <p><strong>Conclusion.</strong> Sales have a strong weekly season (Naive-7 already beats Naive by 48%); ML with lag features is best (RMSE 5.58, 55% lower than Naive) — <strong>sales are predictable</strong>, so "demand volatility" is structural, not unpredictable noise, further supporting differentiated safety stock; but the <strong>demand-forecast column is the answer (corr 0.949)</strong>, so the main output stays SS/ROP decision support, and the time series is only a predictability check.</p>
+
   <table>
     <colgroup><col style="width:34%"><col style="width:66%"></colgroup>
     <tr><th>Output</th><th>Value</th></tr>
