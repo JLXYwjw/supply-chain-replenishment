@@ -2,16 +2,36 @@
 """
 供应链补货指标汇总 —— 基础可读版（analyze_simple.py）
 ======================================================
-这个文件做的事，和原版 analyze.py 完全一样：
+
   1. 读入行级干净表 supply_clean.parquet 和 SKU×仓 表 sku_level.parquet
   2. 计算一组补货关键指标：库存覆盖率分布、需求均值、前置时间、
      促销影响、区域分布、需求波动(CV)分布、临缺货/富余的 SKU×仓 数量
   3. 把结果写成 metrics.json 并打印出来
 
 区别只是：本文件用"最朴素的写法"（for 循环、if 判断），
-把原版里 groupby().agg() 和字典推导都拆成了逐行可读的步骤。
+把 groupby().agg() 和字典推导拆成了逐行可读的步骤。
 
-运行方式（和原版一样，不带命令行参数）：
+运行方式（不带命令行参数）：
+    python scripts/analyze_simple.py
+
+
+English:
+Supply-chain replenishment metric summary (plain, readable version).
+
+Steps:
+  1. Read the row-level clean table supply_clean.parquet and the
+     SKU x warehouse table sku_level.parquet
+  2. Compute a set of replenishment key metrics: inventory-coverage
+     distribution, mean demand, lead time, promo impact, regional
+     distribution, demand-volatility (CV) distribution, and the number of
+     SKU x warehouse combos near stockout / in surplus
+  3. Write the results into metrics.json and print them
+
+The code uses the plainest style (for-loops, if-statements): the
+groupby().agg() and the dict comprehensions are unfolded into
+step-by-step readable code.
+
+Run (no command-line arguments):
     python scripts/analyze_simple.py
 """
 
@@ -53,8 +73,8 @@ def main():
     m["lead_time_max"] = int(clean["lead_time_days"].max())
 
     # ---- 5. 促销影响 ----
-    # 原版：clean.groupby("is_promo")["units_sold"].mean().to_dict()
-    # 拆成：按 is_promo 分组，逐组算销量均值，存到字典里
+    # 按 is_promo 分组，逐组算销量均值，存到字典里
+    # （一行也能算：clean.groupby("is_promo")["units_sold"].mean().to_dict()）
     promo_means = {}
     for flag, g in clean.groupby("is_promo"):
         promo_means[int(flag)] = float(g["units_sold"].mean())
@@ -67,8 +87,8 @@ def main():
     m["promo_lift_pct"] = round((promo_on / promo_off - 1) * 100, 1)
 
     # ---- 6. 区域库存分布 ----
-    # 原版：sku.groupby("region").agg(rows=("sku","count")).reset_index().to_dict("records")
-    # 拆成：按 region 分组，逐组数有多少个 SKU×仓
+    # 按 region 分组，逐组数有多少个 SKU×仓
+    # （一行也能算：sku.groupby("region").agg(rows=("sku","count")).reset_index().to_dict("records")）
     region_dist = []
     for region_name, g in sku.groupby("region", sort=True):
         region_dist.append({"region": region_name, "rows": len(g)})

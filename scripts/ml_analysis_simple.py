@@ -2,7 +2,7 @@
 """
 供应链需求波动聚类 + 安全库存/再订货点 —— 基础可读版（ml_analysis_simple.py）
 ==========================================================================
-这个文件做的事，和原版 ml_analysis.py 完全一样：
+
   1. 读入 SKU×仓 表 sku_level.parquet
   2. 构造 4 个特征（对数需求均值、需求CV、前置时间、覆盖率），标准化后用
      KMeans 聚成 3 类，看不同类的画像
@@ -15,7 +15,30 @@
 诚实说明：这份合成数据没有缺货正样本，需求预测也是给定的，
 所以这里不做预测，只做"差异化补货策略"的决策支持。
 
-运行方式（和原版一样，不带命令行参数）：
+运行方式（不带命令行参数）：
+    python scripts/ml_analysis_simple.py
+
+
+English:
+Demand-volatility clustering + safety stock / reorder point (plain, readable version).
+
+Steps:
+  1. Read the SKU x warehouse table sku_level.parquet
+  2. Build 4 features (log mean demand, demand CV, lead time, coverage),
+     standardize, then cluster with KMeans into 3 classes and look at each
+     class's profile
+  3. Compute safety stock SS = z * sigma * sqrt(L) and reorder point
+     ROP = d * L + SS by formula, plus the gap between current stock and ROP
+  4. Rank the 250 SKU x warehouse combos by gap ascending into 4
+     replenishment priorities P1-P4
+  5. Pick out the top 8 most in need of replenishment
+  6. Write the results into sku_clusters.parquet and ml_result.json
+
+Honest note: the synthetic data has no stockout positives and the demand
+forecast is given, so this is not prediction - it is decision support for
+a differentiated replenishment strategy.
+
+Run (no command-line arguments):
     python scripts/ml_analysis_simple.py
 """
 
@@ -60,7 +83,7 @@ def main():
     sku["cluster"] = km.fit_predict(X)
 
     # ---- 4. 各类画像：逐类算平均需求、CV、前置时间、覆盖率 ----
-    # 原版用 groupby().agg() 一把算完，这里逐类遍历
+    # 用 groupby().agg() 也能一把算完，这里逐类遍历
     clusters_list = []
     for cid in sorted(sku["cluster"].unique()):
         g = sku[sku["cluster"] == cid]
@@ -76,7 +99,7 @@ def main():
 
     # ---- 5. 安全库存 & 再订货点 ----
     # z 值：需求波动大(CV>0.4)的用 1.65（95% 服务水平），否则用 1.28（90%）
-    # 原版用 np.where 一行搞定，这里逐行判断
+    # 用 np.where 也能一行搞定，这里逐行判断
     z_list = []
     for cv_val in sku["demand_cv"]:
         if cv_val > 0.4:
@@ -101,7 +124,7 @@ def main():
     r["high_cv_share"] = round((sku["demand_cv"] > 0.4).mean() * 100, 2)
 
     # ---- 6. 补货优先级 P1~P4 ----
-    # 原版：pd.qcut(sku["gap_to_rop"].rank(method="first"), 4, labels=[...])
+    # 手动复现 qcut 的分档逻辑（pd.qcut(sku["gap_to_rop"].rank(method="first"), 4, labels=[...])）：
     # 含义：按 gap_to_rop 从小到大排（相同值按原始出现顺序排），
     # 然后按 25%/50%/75% 分位数切成 4 档：P1（最需要补）→ P4。
     # 这里手动复现同样的分位数边界：
@@ -147,7 +170,7 @@ def main():
     sku["priority"] = priority_by_row
 
     # ---- 7. 优先级汇总表 ----
-    # 原版：groupby("priority").agg(n=count, mean_gap=mean, mean_cv=mean)
+    # 用 groupby("priority").agg(...) 也能一把算完，这里逐档统计
     priority_table = []
     for lab in labels:
         g = sku[sku["priority"] == lab]

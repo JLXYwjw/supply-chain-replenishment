@@ -2,7 +2,7 @@
 """
 供应链日销量时序预测 baseline 对比 —— 基础可读版（ml_timeseries_simple.py）
 ==========================================================================
-这个文件做的事，和原版 ml_timeseries.py 完全一样：
+
   取代表性 SKU_1 × WH_1 的 365 天日销量序列，按时间顺序 80%/20% 切分，
   用 4 个模型在测试集上比 RMSE/MAE：
     1. Naive（persistence）：明天=今天，最简单基线
@@ -14,7 +14,28 @@
 诚实说明：这份数据的主产出是结构诊断（安全库存/再订货点），
 时序预测只是辅助验证。结果写入 ml_result_ts.json。
 
-运行方式（和原版一样，不带命令行参数）：
+运行方式（不带命令行参数）：
+    python scripts/ml_timeseries_simple.py
+
+
+English:
+Daily-sales time-series forecasting baseline comparison (plain, readable version).
+
+Takes the 365-day daily-sales series of the representative SKU_1 x WH_1,
+splits it chronologically 80% / 20%, and compares 4 models on the test
+set by RMSE / MAE:
+  1. Naive (persistence): tomorrow = today, the simplest baseline
+  2. Naive-7: use the value of the same day last week (captures weekly
+     seasonality)
+  3. ARIMA(1,1,1): differencing + autoregression + moving average
+  4. Random forest: regression on lag1 / lag7 / lag_avg7 / weekday / promo
+Finally it shows which model improves the most over Naive.
+
+Honest note: the main output of this data is the structural diagnosis
+(safety stock / reorder point); the time-series forecast is only an
+auxiliary validation. Results go to ml_result_ts.json.
+
+Run (no command-line arguments):
     python scripts/ml_timeseries_simple.py
 """
 
@@ -72,8 +93,8 @@ def main():
     p_naive = np.full(n_te, ytr[-1])
 
     # ---- 4. 模型 2：Naive-7（上周同天）----
-    # 原版是列表推导：[y[cut+t-7] for t in range(n_te)]
     # 拆成普通 for 循环：第 t 个测试点，用它 7 天前的真实值
+    # （一行也能算：[y[cut+t-7] for t in range(n_te)]）
     p_naive7_list = []
     for t in range(n_te):
         p_naive7_list.append(y[cut + t - 7])
@@ -92,8 +113,8 @@ def main():
     # lag7 = 上周同一天销量
     df["lag7"] = df["units_sold"].shift(7)
 
-    # lag_avg7 = 前 7 天销量的均值（原版是 shift(1).rolling(7).mean() 链式，
-    # 这里用普通循环逐行算：第 t 天的 lag_avg7 = mean(第 t-1 到 t-7 天销量)）
+    # lag_avg7 = 前 7 天销量的均值（用普通循环逐行算：
+    # 第 t 天的 lag_avg7 = mean(第 t-1 到 t-7 天销量)）
     sales = df["units_sold"].tolist()
     lag_avg7 = []
     for t in range(len(sales)):
@@ -126,8 +147,8 @@ def main():
         (r["ml_rmse"] - r["naive_rmse"]) / r["naive_rmse"] * 100, 2)
 
     # ---- 9. 找 RMSE 最小的模型 ----
-    # 原版：min([...], key=lambda k: r[f"{k}_rmse"])
     # 拆成普通循环：逐模型比较 RMSE，记下最小的那个
+    # （一行也能算：min([...], key=lambda k: r[f"{k}_rmse"])）
     model_names = ["naive", "naive7", "arima", "ml"]
     best_name = model_names[0]
     best_rmse = r[f"{best_name}_rmse"]

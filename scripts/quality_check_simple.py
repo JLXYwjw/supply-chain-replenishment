@@ -3,7 +3,7 @@
 r"""
 仓库质量检查门 —— 基础可读版（quality_check_simple.py）
 =====================================================
-这个文件做的事，和原版 quality_check.py 完全一样：
+
   1. 英文名文档（.md/.html）里不能有任何中文（CJK）字符
   2. 中文名文档（文件名含中文或 .zh-CN 后缀）里必须有中文
   3. README/index 里引用的 assets/ 图片文件必须真实存在
@@ -11,13 +11,35 @@ r"""
 
 全部通过打印 QUALITY OK 并退出 0；任何不通过打印 QUALITY FAIL 和错误列表，退出 1。
 
-区别只是：原版用正则表达式做 CJK 检测和 assets 引用提取，
+区别只是：用正则表达式做 CJK 检测和 assets 引用提取，
 这里改成了普通循环（逐字符判断 Unicode 范围、逐段扫描文件名），
 行为完全一致。
 
 运行方式：
     python scripts/quality_check_simple.py [仓库根目录]
     不带参数则检查当前目录。
+
+
+English:
+Repository quality gate (plain, readable version).
+
+Checks:
+  1. English-named docs (.md / .html) must not contain any CJK characters
+  2. Chinese-named docs (Chinese in the filename or .zh-CN suffix) must
+     contain Chinese
+  3. Images referenced by README / index under assets/ must actually exist
+  4. The bilingual README + index four files must all exist
+
+Prints QUALITY OK and exits 0 when everything passes; prints QUALITY FAIL
+and the error list, exits 1 otherwise.
+
+Note: the CJK detection and asset-reference extraction are implemented
+with plain loops (character-by-character Unicode range checks, file-name
+scans) instead of regex, with identical behavior.
+
+Run:
+    python scripts/quality_check_simple.py [repository root]
+Without an argument it checks the current directory.
 """
 
 import subprocess
@@ -62,7 +84,7 @@ def is_zh_name(name):
 def find_asset_refs(text):
     r"""从文本里找出所有 assets/xxx.png|jpg|... 形式的引用。
 
-    原版用正则 assets/[word/dash/dot]+.(png|jpg|jpeg|gif|svg)，
+    用正则 assets/[word/dash/dot]+.(png|jpg|jpeg|gif|svg) 可一把匹配，
     这里改成普通扫描：找 "assets/" 开头，往后读连续的文件名字符
     （字母、数字、下划线、点、横线），再看末尾扩展名是否合法。
     """

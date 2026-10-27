@@ -2,7 +2,7 @@
 """
 供应链清洗 + SKU×仓级聚合 —— 基础可读版（clean_data_simple.py）
 ================================================================
-这个文件做的事，和原版 clean_data.py 完全一样：
+
   1. 读入合成供应链原始 CSV（supply_chain_dataset1.csv，共 91250 行）
   2. 把 Date 列转成真正的日期，并派生"年月 ym"和"星期几 weekday"
   3. 派生补货相关指标：收入 revenue、库存覆盖率 inventory_coverage、
@@ -16,7 +16,31 @@
 区别只是：本文件故意用"最朴素的写法"（for 循环、if 判断、普通函数），
 每一步都写清楚了在做什么、为什么。
 
-运行方式（和原版一样，不带命令行参数）：
+运行方式（不带命令行参数）：
+    python scripts/clean_data_simple.py
+
+
+English:
+Supply-chain cleaning + SKU x warehouse aggregation (plain, readable version).
+
+Steps:
+  1. Read the synthetic supply-chain raw CSV (supply_chain_dataset1.csv,
+     91,250 rows)
+  2. Convert the Date column into real dates, derive "year-month ym" and
+     "weekday"
+  3. Derive replenishment indicators: revenue, inventory coverage,
+     demand-vs-order difference, stockout flag
+  4. Normalize column names to lowercase-with-underscores, sort by
+     SKU + warehouse + date, save the row-level clean table
+     supply_clean.parquet
+  5. Aggregate by SKU x warehouse: mean/std/CV of demand per combo,
+     saved as sku_level.parquet
+  6. Write the statistics into cleaning_report.json and print them
+
+The code uses the plainest style on purpose; every step states what it
+does and why.
+
+Run (no command-line arguments):
     python scripts/clean_data_simple.py
 """
 
@@ -43,7 +67,7 @@ def main():
     report = {}
     report["rows_in"] = len(df)
 
-    # 统计每一列有多少个缺失值（原版是一行字典推导，这里拆开写）
+    # 统计每一列有多少个缺失值（用循环逐个统计）
     missing = {}
     for col in df.columns:
         missing[col] = int(df[col].isna().sum())
@@ -55,7 +79,7 @@ def main():
     # 派生"年月"：比如 2024-03，方便后面按月分组
     df["ym"] = df["Date"].dt.to_period("M").astype(str)
 
-    # 派生"星期几"：0=周一, 6=周日（原版用 dayofweek，等价的新写法是 day_of_week）
+    # 派生"星期几"：0=周一, 6=周日（用 day_of_week）
     df["weekday"] = df["Date"].dt.day_of_week
 
     # 记录数据覆盖的日期范围、SKU 数、仓库数
@@ -82,7 +106,7 @@ def main():
     report["stockout_positive"] = int(df["Stockout_Flag"].sum())
     report["stockout_rate"] = round(df["Stockout_Flag"].mean() * 100, 4)
 
-    # ---- 4. 统一列名（原版是 rename 一次性映射，这里照抄映射表） ----
+    # ---- 4. 统一列名（用 rename 一次性映射） ----
     rename_map = {
         "SKU_ID": "sku",
         "Warehouse_ID": "wh",
@@ -118,8 +142,7 @@ def main():
     report["rows_out"] = len(clean)
 
     # ---- 5. 按 SKU×仓 聚合 ----
-    # 原版用 groupby().agg(...) 一把算完，里面有个 lambda 算变异系数。
-    # 这里改成：先按 (sku, wh) 分组，再逐组用普通 Python 算每个统计量，
+    # 先按 (sku, wh) 分组，再逐组用普通 Python 算每个统计量，
     # 这样每一步在算什么一目了然。
     groups = clean.groupby(["sku", "wh"], sort=True)
 
